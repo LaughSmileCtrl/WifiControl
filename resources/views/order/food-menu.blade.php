@@ -43,32 +43,38 @@
 <form action="" method="POST">
     @csrf
     <h3>Makanan</h3>
+    @php
+        $i = 1;
+    @endphp
     @foreach ($foods as $food)
     @if ($food->type == 'food')
     <div class="card" id="-{{ $food->id }}">
         <div class="card-header">
-            <h5>{{ $food->name}}</h5>
+            <h5>{{$i++. ").  " .$food->name}}</h5>
             <p>Rp. {{ number_format($food->price) }}</p>
         </div>
         <div class="card-body">
             <input type="checkbox" name="" id="id-{{ $food->id }}" value="{{ $food->id }}">
-            <input type="number" name="food[{{ $food->id }}][total]" id="num-id-{{ $food->id }}" min="0" disabled>
+            <input type="number" name="foods[{{ $food->id }}][total]" id="num-id-{{ $food->id }}" min="0" disabled>
         </div>
     </div>
     @endif
     @endforeach
 
     <h3>Minuman</h3>
+    @php
+        $i = 1;
+    @endphp
     @foreach ($foods as $food)
     @if ($food->type == 'drink')
     <div class="card" id="-{{ $food->id }}">
         <div class="card-header">
-            <h5>{{ $food->name}}</h5>
+            <h5>{{$i++. ").  " .$food->name}}</h5>
             <p>Rp. {{ number_format($food->price) }}</p>
         </div>
         <div class="card-body">
             <input type="checkbox" name="" id="id-{{ $food->id }}" value="{{ $food->id }}">
-            <input type="number" name="food[{{ $food->id }}][total]" id="num-id-{{ $food->id }}" min="0" disabled>
+            <input type="number" name="foods[{{ $food->id }}][total]" id="num-id-{{ $food->id }}" min="0" disabled>
         </div>
     </div>
     @endif

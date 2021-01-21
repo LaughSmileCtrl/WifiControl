@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\StoreOrderPost;
 use App\Models\Foods;
 use App\Models\Orders;
+use ArrayObject;
 
 class OrderController extends Controller
 {
@@ -43,7 +44,7 @@ class OrderController extends Controller
         }
 
         // Get all food/drink menus
-        $foods = Foods::all();
+        $foods = Foods::where('is_available', true)->get();
         return view('order.food-menu', ['foods' => $foods]);
     }
 
@@ -53,8 +54,30 @@ class OrderController extends Controller
         // Get order where id like session order_id
         $foodOrder = Orders::find($request->session()->get('order_id'));
 
+        // Copy food request
+        $foodsRequest = new ArrayObject($request->foods);
+
+        // Check Availabelity of food ->> not finish
+        $foodsId = array_keys($request->foods);
+
+        $foods = Foods::whereIn('id', $foodsId)->get();
+
+        foreach($foods as $food)
+        {
+            if($food->stock >= $foodsRequest[$food->id]['total'] && $food->is_available == TRUE)
+            {
+                $food->stock = $food->stock - $foodsRequest[$food->id]['total'];
+                $food->save();
+                $foodsReady[$food->id] = $foodsRequest[$food->id];
+            }
+            else if ($food->stock == NULL && $food->is_available == TRUE) 
+            {
+                $foodsReady[$food->id] = $foodsRequest[$food->id];
+            }
+        }
+
         // To save order foods
-        $foodOrder->foods()->attach($request->food);
+        $foodOrder->foods()->attach($foodsReady);
 
         return view('order.checkout', ['foodOrder' => $foodOrder->foods]);
     }

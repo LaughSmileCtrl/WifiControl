@@ -18,6 +18,8 @@ class CreateFoodsTable extends Migration
             $table->string('name', 50);
             $table->unsignedInteger('price');
             $table->string('type', 10);
+            $table->integer('stock')->nullable(true);
+            $table->boolean('is_available')->default(true);
         });
     }
 
